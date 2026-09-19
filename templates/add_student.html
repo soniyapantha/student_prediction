@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Add Student{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="mb-4">
+      <a href="/" class="text-muted small text-decoration-none"><i class="bi bi-arrow-left me-1"></i>Back to Dashboard</a>
+      <h3 class="fw-bold mt-2 mb-0">Add New Student</h3>
+      <p class="text-muted">Fill in details. All 3 ML algorithms will predict performance instantly.</p>
+    </div>
+    <div class="card p-4">
+      <form action="/student/add" method="POST">
+        <h6 class="text-muted fw-semibold mb-3"><i class="bi bi-person me-1"></i>Student Information</h6>
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+          <input type="text" name="name" class="form-control form-control-lg" placeholder="e.g. Ram Bahadur Thapa" required maxlength="100">
+        </div>
+
+        <hr class="my-4">
+        <h6 class="text-muted fw-semibold mb-3"><i class="bi bi-journal-text me-1"></i>Academic Marks (0-100)</h6>
+        <div class="row g-3 mb-4">
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Math Marks <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input type="number" name="math_marks" class="form-control" min="0" max="100" step="0.5" placeholder="75" required>
+              <span class="input-group-text">%</span>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Science Marks <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input type="number" name="science_marks" class="form-control" min="0" max="100" step="0.5" placeholder="68" required>
+              <span class="input-group-text">%</span>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">English Marks <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input type="number" name="english_marks" class="form-control" min="0" max="100" step="0.5" placeholder="72" required>
+              <span class="input-group-text">%</span>
+            </div>
+          </div>
+        </div>
+
+        <hr class="my-4">
+        <h6 class="text-muted fw-semibold mb-3"><i class="bi bi-clock me-1"></i>Study Habits and Attendance</h6>
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Attendance <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input type="number" name="attendance" class="form-control" min="0" max="100" step="0.5" placeholder="78" required>
+              <span class="input-group-text">%</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Hours Studied per Day <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input type="number" name="hours_studied" class="form-control" min="0" max="16" step="0.5" placeholder="4.5" required>
+              <span class="input-group-text">hrs</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Assignments Completed <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input type="number" name="assignments" class="form-control" min="0" max="100" step="1" placeholder="85" required>
+              <span class="input-group-text">%</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Previous Semester GPA <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input type="number" name="prev_gpa" class="form-control" min="0" max="4" step="0.01" placeholder="3.20" required>
+              <span class="input-group-text">/ 4.0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert alert-info small">
+          <i class="bi bi-info-circle-fill me-1"></i>
+          After submitting, <strong>3 advanced ML algorithms</strong> will predict Pass or Fail with confidence scores. Results are saved to the database automatically.
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+          <button type="submit" class="btn btn-primary btn-lg px-5"><i class="bi bi-cpu-fill me-2"></i>Predict Performance</button>
+          <a href="/" class="btn btn-outline-secondary btn-lg">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

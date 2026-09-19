@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>👨‍🏫 Teacher Dashboard</h2>
+    <div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+            ➕ Add New Student
+        </button>
+        <button class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#addMarksModal">
+            📝 Add/Edit Marks
+        </button>
+    </div>
+</div>
+
+<!-- Class & Section Selection -->
+<div class="card mb-4">
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">📚 Select Class & Section</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <label class="form-label">Select Class</label>
+                <select id="classSelect" class="form-select" onchange="loadSections()">
+                    <option value="">-- Select Class --</option>
+                    {% for class in classes %}
+                    <option value="{{ class.id }}">{{ class.name }} ({{ class.code }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Select Section</label>
+                <select id="sectionSelect" class="form-select" onchange="loadStudents()">
+                    <option value="">-- Select Section --</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Academic Year</label>
+                <select class="form-select">
+                    <option>2024-2025</option>
+                    <option>2023-2024</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total Students</h5>
+                <h2 id="totalStudents">0</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Pass</h5>
+                <h2 id="passCount">0</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-danger">
+            <div class="card-body">
+                <h5 class="card-title">Fail</h5>
+                <h2 id="failCount">0</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Pass Rate</h5>
+                <h2 id="passRate">0%</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Students Table -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">📋 Student List</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped" id="studentsTable">
+                <thead>
+                    <tr>
+                        <th>Roll No</th>
+                        <th>Name</th>
+                        <th>Attendance</th>
+                        <th>Marks (M/S/E)</th>
+                        <th>Avg</th>
+                        <th>Prediction</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="studentsTableBody">
+                    <tr>
+                        <td colspan="7" class="text-center">Select class and section to view students</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Student Modal -->
+<div class="modal fade" id="addStudentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">➕ Add New Student</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addStudentForm" method="POST" action="{{ url_for('teacher_add_student_api') }}">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Roll Number *</label>
+                            <input type="text" name="roll_number" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Full Name *</label>
+                            <input type="text" name="name" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Parent/Guardian Name</label>
+                            <input type="text" name="parent_name" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Parent Contact</label>
+                            <input type="text" name="parent_contact" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label>Math Marks (0-100)</label>
+                            <input type="number" step="any" name="math_marks" class="form-control" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label>Science Marks (0-100)</label>
+                            <input type="number" step="any" name="science_marks" class="form-control" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label>English Marks (0-100)</label>
+                            <input type="number" step="any" name="english_marks" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label>Attendance (%)</label>
+                            <input type="number" step="any" name="attendance" class="form-control" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label>Hours Studied/day</label>
+                            <input type="number" step="any" name="hours_studied" class="form-control" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label>Assignments (%)</label>
+                            <input type="number" step="any" name="assignments" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Previous GPA</label>
+                            <input type="number" step="any" name="prev_gpa" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Address</label>
+                            <textarea name="address" class="form-control" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <input type="hidden" name="class_id" id="modalClassId">
+                    <input type="hidden" name="section_id" id="modalSectionId">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save & Predict</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Marks Modal -->
+<div class="modal fade" id="addMarksModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">📝 Bulk Marks Entry</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <small>Upload CSV file with columns: roll_number, math_marks, science_marks, english_marks, attendance</small>
+                </div>
+                <form id="bulkMarksForm" method="POST" action="{{ url_for('teacher_bulk_marks') }}" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label>CSV File</label>
+                        <input type="file" name="csv_file" class="form-control" accept=".csv" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Upload & Update Predictions</button>
+                </form>
+                <hr>
+                <a href="{{ url_for('download_marks_template') }}" class="btn btn-outline-secondary w-100">Download Template</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentClassId = null;
+let currentSectionId = null;
+
+function loadSections() {
+    const classId = document.getElementById('classSelect').value;
+    if (!classId) return;
+    
+    currentClassId = classId;
+    document.getElementById('modalClassId').value = classId;
+    
+    fetch(`/api/classes/${classId}/sections`)
+        .then(response => response.json())
+        .then(data => {
+            const sectionSelect = document.getElementById('sectionSelect');
+            sectionSelect.innerHTML = '<option value="">-- Select Section --</option>';
+            data.forEach(section => {
+                sectionSelect.innerHTML += `<option value="${section.id}">Section ${section.name}</option>`;
+            });
+        });
+}
+
+function loadStudents() {
+    const sectionId = document.getElementById('sectionSelect').value;
+    if (!sectionId) return;
+    
+    currentSectionId = sectionId;
+    document.getElementById('modalSectionId').value = sectionId;
+    
+    fetch(`/api/sections/${sectionId}/students`)
+        .then(response => response.json())
+        .then(data => {
+            const tbody = document.getElementById('studentsTableBody');
+            tbody.innerHTML = '';
+            
+            let pass = 0, fail = 0;
+            
+            data.students.forEach(student => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${student.roll_number || '-'}</td>
+                    <td>${student.name}</td>
+                    <td>${student.attendance}%</td>
+                    <td>${student.math_marks}/${student.science_marks}/${student.english_marks}</td>
+                    <td>${student.avg_marks}</td>
+                    <td class="${student.prediction === 'Pass' ? 'text-success fw-bold' : 'text-danger fw-bold'}">
+                        ${student.prediction}
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-info" onclick="viewStudent(${student.id})">View</button>
+                        <button class="btn btn-sm btn-warning" onclick="sendRemark(${student.id})">Remark</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteStudent(${student.id})">Del</button>
+                    </td>
+                `;
+                
+                if (student.prediction === 'Pass') pass++;
+                else fail++;
+            });
+            
+            document.getElementById('totalStudents').innerText = data.total;
+            document.getElementById('passCount').innerText = pass;
+            document.getElementById('failCount').innerText = fail;
+            document.getElementById('passRate').innerText = data.total > 0 ? Math.round((pass/data.total)*100) + '%' : '0%';
+        });
+}
+
+function viewStudent(studentId) {
+    window.location.href = `/teacher/student/${studentId}`;
+}
+
+function sendRemark(studentId) {
+    window.location.href = `/teacher/send-remark/${studentId}`;
+}
+
+function deleteStudent(studentId) {
+    if (confirm('Delete this student?')) {
+        fetch(`/api/students/${studentId}`, { method: 'DELETE' })
+            .then(() => loadStudents());
+    }
+}
+</script>
+{% endblock %}

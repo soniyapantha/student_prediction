@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h3 class="mb-0 fw-bold">Dashboard</h3>
+    <p class="text-muted mb-0 small">Student Performance Prediction System</p>
+  </div>
+  <a href="/student/add" class="btn btn-primary"><i class="bi bi-plus-circle-fill me-1"></i>Add New Student</a>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card p-3 text-white" style="background:linear-gradient(135deg,#4f46e5,#7c3aed)">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-people-fill fs-2 me-3"></i>
+        <div><div class="fs-1 fw-bold">{{ total }}</div><div class="small opacity-75">Total Students</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card p-3 text-white" style="background:linear-gradient(135deg,#059669,#10b981)">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-trophy-fill fs-2 me-3"></i>
+        <div><div class="fs-1 fw-bold">{{ passed }}</div><div class="small opacity-75">Predicted Pass</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card p-3 text-white" style="background:linear-gradient(135deg,#dc2626,#ef4444)">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-exclamation-triangle-fill fs-2 me-3"></i>
+        <div><div class="fs-1 fw-bold">{{ failed }}</div><div class="small opacity-75">At Risk / Fail</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h5 class="fw-semibold mb-3 text-muted"><i class="bi bi-cpu me-2"></i>Algorithm Accuracy</h5>
+<div class="row g-3 mb-4">
+{% for algo_name, stats in accuracy.items() %}
+  <div class="col-md-4">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <div class="fw-semibold">{{ algo_name }}</div>
+        <span class="badge bg-primary">{{ stats.accuracy }}%</span>
+      </div>
+      <div class="progress mb-2" style="height:8px">
+        <div class="progress-bar bg-primary" style="width:{{ stats.accuracy }}%"></div>
+      </div>
+      <div class="row text-center small text-muted">
+        <div class="col"><div class="fw-bold text-dark">{{ stats.cv_mean }}%</div><div>CV Score</div></div>
+        <div class="col"><div class="fw-bold text-dark">{{ stats.f1_score }}%</div><div>F1 Score</div></div>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <div class="d-flex justify-content-between align-items-center p-4 pb-3">
+      <h5 class="mb-0 fw-bold"><i class="bi bi-table me-2"></i>All Students</h5>
+      <span class="text-muted small">{{ total }} record(s)</span>
+    </div>
+    {% if students %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th class="ps-4">Name</th>
+            <th>Avg Marks</th>
+            <th>Attendance</th>
+            <th>Random Forest</th>
+            <th>Gradient Boosting</th>
+            <th>SVM</th>
+            <th>Best Model</th>
+            <th class="pe-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for s in students %}
+          <tr>
+            <td class="ps-4 fw-semibold">{{ s.name }}</td>
+            <td>{{ s.average_marks() }}%</td>
+            <td>{{ s.attendance }}%</td>
+            <td>
+              {% if s.prediction_rf == 'Pass' %}
+              <span class="badge badge-pass">Pass ({{ s.confidence_rf }}%)</span>
+              {% else %}
+              <span class="badge badge-fail">Fail ({{ s.confidence_rf }}%)</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if s.prediction_gb == 'Pass' %}
+              <span class="badge badge-pass">Pass ({{ s.confidence_gb }}%)</span>
+              {% else %}
+              <span class="badge badge-fail">Fail ({{ s.confidence_gb }}%)</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if s.prediction_svm == 'Pass' %}
+              <span class="badge badge-pass">Pass ({{ s.confidence_svm }}%)</span>
+              {% else %}
+              <span class="badge badge-fail">Fail ({{ s.confidence_svm }}%)</span>
+              {% endif %}
+            </td>
+            <td><span class="badge bg-secondary">{{ s.best_model }}</span></td>
+            <td class="pe-4">
+              <div class="d-flex gap-1">
+                <a href="/student/{{ s.id }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a>
+                <a href="/student/edit/{{ s.id }}" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i></a>
+                <a href="/student/delete/{{ s.id }}" onclick="return confirm('Delete {{ s.name }}?')" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+      <i class="bi bi-inbox fs-1 d-block mb-3 opacity-50"></i>
+      <p class="fs-5">No students yet.</p>
+      <a href="/student/add" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Add First Student</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<p class="text-muted small text-center mt-3">
+  JSON API: <a href="/api/students" target="_blank">/api/students</a>
+</p>
+
+{% endblock %}

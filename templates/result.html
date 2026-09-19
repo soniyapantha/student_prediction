@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}Result - {{ student.name }}{% endblock %}
+{% block content %}
+
+<div class="mb-3">
+  <a href="/" class="text-muted text-decoration-none small"><i class="bi bi-arrow-left me-1"></i>Back to Dashboard</a>
+</div>
+
+<div class="row g-4">
+
+  <div class="col-lg-4">
+    <div class="card p-4 h-100">
+      <div class="text-center mb-4">
+        <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width:72px;height:72px">
+          <i class="bi bi-person-fill fs-1 text-primary"></i>
+        </div>
+        <h5 class="fw-bold mb-0">{{ student.name }}</h5>
+        <div class="text-muted small">Student ID #{{ student.id }}</div>
+      </div>
+
+      <hr>
+
+      <div class="text-center mb-3">
+        <div class="text-muted small mb-1">Overall Performance Score</div>
+        {% set score = student.overall_score() %}
+        {% if score >= 70 %}
+        <div class="fs-2 fw-bold text-success">{{ score }}<span class="fs-6">/100</span></div>
+        <div class="progress mt-2" style="height:8px"><div class="progress-bar bg-success" style="width:{{ score }}%"></div></div>
+        {% elif score >= 50 %}
+        <div class="fs-2 fw-bold text-warning">{{ score }}<span class="fs-6">/100</span></div>
+        <div class="progress mt-2" style="height:8px"><div class="progress-bar bg-warning" style="width:{{ score }}%"></div></div>
+        {% else %}
+        <div class="fs-2 fw-bold text-danger">{{ score }}<span class="fs-6">/100</span></div>
+        <div class="progress mt-2" style="height:8px"><div class="progress-bar bg-danger" style="width:{{ score }}%"></div></div>
+        {% endif %}
+      </div>
+
+      <hr>
+
+      <table class="table table-sm table-borderless mb-0">
+        <tr><td class="text-muted small">Attendance</td><td class="fw-semibold">{{ student.attendance }}%</td></tr>
+        <tr><td class="text-muted small">Avg Marks</td><td class="fw-semibold">{{ student.average_marks() }}%</td></tr>
+        <tr><td class="text-muted small">Math</td><td class="fw-semibold">{{ student.math_marks }}%</td></tr>
+        <tr><td class="text-muted small">Science</td><td class="fw-semibold">{{ student.science_marks }}%</td></tr>
+        <tr><td class="text-muted small">English</td><td class="fw-semibold">{{ student.english_marks }}%</td></tr>
+        <tr><td class="text-muted small">Hours/Day</td><td class="fw-semibold">{{ student.hours_studied }} hrs</td></tr>
+        <tr><td class="text-muted small">Assignments</td><td class="fw-semibold">{{ student.assignments }}%</td></tr>
+        <tr><td class="text-muted small">Prev GPA</td><td class="fw-semibold">{{ student.prev_gpa }} / 4.0</td></tr>
+      </table>
+
+      <div class="d-grid gap-2 mt-4">
+        <a href="/student/edit/{{ student.id }}" class="btn btn-warning"><i class="bi bi-pencil-fill me-1"></i>Edit and Re-predict</a>
+        <a href="/student/delete/{{ student.id }}" onclick="return confirm('Delete {{ student.name }}?')" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash me-1"></i>Delete Student</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <h4 class="fw-bold mb-1">ML Prediction Results</h4>
+    <p class="text-muted mb-4">3 advanced algorithms independently analyzed this student.</p>
+
+    <div class="row g-3 mb-4">
+
+      <div class="col-md-4">
+        {% if student.prediction_rf == 'Pass' %}
+        <div class="card p-3 h-100" style="border-left:5px solid #198754;border-radius:12px">
+          <div class="small fw-semibold text-muted mb-1">Random Forest</div>
+          <div class="fs-3 fw-bold text-success">Pass</div>
+          <div class="text-muted small mb-2">Confidence: <strong>{{ student.confidence_rf }}%</strong></div>
+          <div class="progress mb-3" style="height:6px"><div class="progress-bar bg-success" style="width:{{ student.confidence_rf }}%"></div></div>
+        {% else %}
+        <div class="card p-3 h-100" style="border-left:5px solid #dc3545;border-radius:12px">
+          <div class="small fw-semibold text-muted mb-1">Random Forest</div>
+          <div class="fs-3 fw-bold text-danger">Fail</div>
+          <div class="text-muted small mb-2">Confidence: <strong>{{ student.confidence_rf }}%</strong></div>
+          <div class="progress mb-3" style="height:6px"><div class="progress-bar bg-danger" style="width:{{ student.confidence_rf }}%"></div></div>
+        {% endif %}
+          <div class="small text-muted">200 trees vote. Most robust to noise.</div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        {% if student.prediction_gb == 'Pass' %}
+        <div class="card p-3 h-100" style="border-left:5px solid #198754;border-radius:12px">
+          <div class="small fw-semibold text-muted mb-1">Gradient Boosting</div>
+          <div class="fs-3 fw-bold text-success">Pass</div>
+          <div class="text-muted small mb-2">Confidence: <strong>{{ student.confidence_gb }}%</strong></div>
+          <div class="progress mb-3" style="height:6px"><div class="progress-bar bg-success" style="width:{{ student.confidence_gb }}%"></div></div>
+        {% else %}
+        <div class="card p-3 h-100" style="border-left:5px solid #dc3545;border-radius:12px">
+          <div class="small fw-semibold text-muted mb-1">Gradient Boosting</div>
+          <div class="fs-3 fw-bold text-danger">Fail</div>
+          <div class="text-muted small mb-2">Confidence: <strong>{{ student.confidence_gb }}%</strong></div>
+          <div class="progress mb-3" style="height:6px"><div class="progress-bar bg-danger" style="width:{{ student.confidence_gb }}%"></div></div>
+        {% endif %}
+          <div class="small text-muted">Learns from mistakes. Usually most accurate.</div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        {% if student.prediction_svm == 'Pass' %}
+        <div class="card p-3 h-100" style="border-left:5px solid #198754;border-radius:12px">
+          <div class="small fw-semibold text-muted mb-1">SVM (RBF Kernel)</div>
+          <div class="fs-3 fw-bold text-success">Pass</div>
+          <div class="text-muted small mb-2">Confidence: <strong>{{ student.confidence_svm }}%</strong></div>
+          <div class="progress mb-3" style="height:6px"><div class="progress-bar bg-success" style="width:{{ student.confidence_svm }}%"></div></div>
+        {% else %}
+        <div class="card p-3 h-100" style="border-left:5px solid #dc3545;border-radius:12px">
+          <div class="small fw-semibold text-muted mb-1">SVM (RBF Kernel)</div>
+          <div class="fs-3 fw-bold text-danger">Fail</div>
+          <div class="text-muted small mb-2">Confidence: <strong>{{ student.confidence_svm }}%</strong></div>
+          <div class="progress mb-3" style="height:6px"><div class="progress-bar bg-danger" style="width:{{ student.confidence_svm }}%"></div></div>
+        {% endif %}
+          <div class="small text-muted">Curved boundary between Pass and Fail.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="card p-3 mb-4 border-0" style="background:#fef9c3">
+      <div class="d-flex align-items-center gap-3">
+        <i class="bi bi-trophy-fill text-warning fs-2"></i>
+        <div>
+          <div class="fw-bold">Best Algorithm: {{ student.best_model }}</div>
+          <div class="text-muted small">Selected by highest 5-fold cross-validation score.</div>
+        </div>
+        <span class="ms-auto badge bg-warning text-dark px-3 py-2">Recommended</span>
+      </div>
+    </div>
+
+    <div class="card p-4">
+      <h6 class="fw-semibold mb-3"><i class="bi bi-bar-chart-fill me-1"></i>Subject Marks Breakdown</h6>
+      <canvas id="marksChart" height="120"></canvas>
+    </div>
+
+    <div class="mt-3">
+      <a href="/" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back to Dashboard</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+const ctx = document.getElementById('marksChart').getContext('2d');
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ['Math', 'Science', 'English', 'Attendance', 'Assignments'],
+    datasets: [{
+      label: 'Score (%)',
+      data: [{{ student.math_marks }}, {{ student.science_marks }}, {{ student.english_marks }}, {{ student.attendance }}, {{ student.assignments }}],
+      backgroundColor: ['rgba(79,70,229,0.7)','rgba(16,185,129,0.7)','rgba(245,158,11,0.7)','rgba(59,130,246,0.7)','rgba(236,72,153,0.7)'],
+      borderRadius: 8,
+      borderSkipped: false
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } } }
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">📚 Welcome, {{ user.full_name }}!</h2>
+
+{% if student %}
+<div class="row">
+    <!-- Prediction Card -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">🎯 Your Performance Prediction</h5>
+            </div>
+            <div class="card-body text-center">
+                <h1 class="display-4 {% if student.prediction_rf == 'Pass' %}text-success{% else %}text-danger{% endif %}">
+                    {{ student.prediction_rf }}
+                </h1>
+                <p class="lead">Recommended by: <strong>{{ student.best_model }}</strong></p>
+                <hr>
+                <div class="row">
+                    <div class="col-4">
+                        <small>Random Forest</small>
+                        <h5 {% if student.prediction_rf == 'Pass' %}class="text-success"{% else %}class="text-danger"{% endif %}>
+                            {{ student.prediction_rf }}<br>
+                            <small>{{ student.confidence_rf }}%</small>
+                        </h5>
+                    </div>
+                    <div class="col-4">
+                        <small>Gradient Boost</small>
+                        <h5 {% if student.prediction_gb == 'Pass' %}class="text-success"{% else %}class="text-danger"{% endif %}>
+                            {{ student.prediction_gb }}<br>
+                            <small>{{ student.confidence_gb }}%</small>
+                        </h5>
+                    </div>
+                    <div class="col-4">
+                        <small>SVM</small>
+                        <h5 {% if student.prediction_svm == 'Pass' %}class="text-success"{% else %}class="text-danger"{% endif %}>
+                            {{ student.prediction_svm }}<br>
+                            <small>{{ student.confidence_svm }}%</small>
+                        </h5>
+                    </div>
+                </div>
+                <a href="{{ url_for('student_my_prediction') }}" class="btn btn-outline-primary mt-3">View Detailed Report</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Your Details Card -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">📊 Your Academic Profile</h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr><th>Attendance</th><td>{{ student.attendance }}%</td></tr>
+                    <tr><th>Math Marks</th><td>{{ student.math_marks }} / 100</td></tr>
+                    <tr><th>Science Marks</th><td>{{ student.science_marks }} / 100</td></tr>
+                    <tr><th>English Marks</th><td>{{ student.english_marks }} / 100</td></tr>
+                    <tr><th>Average Marks</th><td>{{ student.avg_marks }} / 100</td></tr>
+                    <tr><th>Hours Studied</th><td>{{ student.hours_studied }} hrs/day</td></tr>
+                    <tr><th>Assignments</th><td>{{ student.assignments }}%</td></tr>
+                    <tr><th>Previous GPA</th><td>{{ student.prev_gpa }} / 4.0</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Remarks Section -->
+<div class="card mt-2">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0">💬 Remarks from Teachers</h5>
+    </div>
+    <div class="card-body">
+        {% if remarks %}
+            {% for remark in remarks %}
+            <div class="alert {% if remark.remark_type == 'appreciation' %}alert-success{% elif remark.remark_type == 'warning' %}alert-warning{% elif remark.remark_type == 'improvement' %}alert-info{% else %}alert-secondary{% endif %}">
+                <div class="d-flex justify-content-between">
+                    <strong>From: {{ remark.sender }}</strong>
+                    <small>{{ remark.created_at }}</small>
+                </div>
+                <p class="mb-0 mt-2">{{ remark.message }}</p>
+                {% if remark.remark_type %}
+                <small class="text-muted">Type: {{ remark.remark_type }}</small>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted text-center">No remarks yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+{% else %}
+<div class="alert alert-warning">
+    <h5>⚠️ No Student Record Found</h5>
+    <p>Your account is not linked to any student record. Please contact your teacher or administrator.</p>
+    <hr>
+    <p><strong>Note to Admin/Teacher:</strong> When adding a student, create a user account with role "Student" and set the Student ID field to match the prediction record ID.</p>
+</div>
+{% endif %}
+{% endblock %}

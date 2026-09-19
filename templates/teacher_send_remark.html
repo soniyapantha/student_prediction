@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Send Remark to {{ student.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">💬 Send Remark to {{ student.name }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info mb-4">
+                    <strong>Student Prediction: </strong>
+                    <span class="{% if student.prediction_rf == 'Pass' %}text-success{% else %}text-danger{% endif %} fw-bold">
+                        {{ student.prediction_rf }}
+                    </span>
+                </div>
+                
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Remark Type</label>
+                        <select name="remark_type" class="form-select">
+                            <option value="general">📝 General Comment</option>
+                            <option value="appreciation">🎉 Appreciation / Praise</option>
+                            <option value="warning">⚠️ Warning / Concern</option>
+                            <option value="improvement">📈 Improvement Suggestion</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Message</label>
+                        <textarea name="message" rows="5" class="form-control" required 
+                                  placeholder="Write your feedback/remark here..."></textarea>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('teacher_student_detail', student_id=student.id) }}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Send Remark ✉️</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

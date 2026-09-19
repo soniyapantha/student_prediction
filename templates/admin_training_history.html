@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Model Training History{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📊 ML Model Training History</h2>
+    <a href="{{ url_for('dashboard_admin') }}" class="btn btn-secondary">← Back</a>
+</div>
+
+<div class="card shadow">
+    <div class="card-body">
+        {% if history %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Trained By</th>
+                        <th>Samples</th>
+                        <th>Random Forest</th>
+                        <th>Gradient Boosting</th>
+                        <th>SVM</th>
+                        <th>Best Model</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in history %}
+                    <tr>
+                        <td>{{ record.trained_at }}</td>
+                        <td>{{ record.trained_by }}</td>
+                        <td>{{ record.num_samples }}</td>
+                        <td>{{ record.rf_acc }}%</td>
+                        <td>{{ record.gb_acc }}%</td>
+                        <td>{{ record.svm_acc }}%</td>
+                        <td><span class="badge bg-primary">{{ record.best_model }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            No training history yet. Click "Retrain Models" in admin dashboard to create history.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Add New Student{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>➕ Admin: Add New Student</h2>
+        <a href="{{ url_for('admin_students_list') }}" class="btn btn-secondary">← Back to Students List</a>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">📝 Student Information</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Roll Number <span class="text-muted">(Optional)</span></label>
+                        <input type="text" name="roll_number" class="form-control" placeholder="e.g., BCA2024001">
+                        <small class="text-muted">Leave empty to auto-generate</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Class <span class="text-muted">(Optional)</span></label>
+                        <select name="class_id" class="form-select" id="classSelect" onchange="loadSections()">
+                            <option value="">-- Select Class --</option>
+                            {% for c in classes %}
+                            <option value="{{ c.id }}">{{ c.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Section <span class="text-muted">(Optional)</span></label>
+                        <select name="section_id" class="form-select" id="sectionSelect">
+                            <option value="">-- Select Section --</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Parent Contact <span class="text-muted">(Optional)</span></label>
+                        <input type="text" name="parent_contact" class="form-control" placeholder="Phone number">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Address <span class="text-muted">(Optional)</span></label>
+                        <textarea name="address" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <hr>
+                <h6 class="mb-3">📊 Academic Marks <span class="text-muted">(All fields are optional - can be added later)</span></h6>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> You can leave these fields empty for now. Marks can be added/updated later from the edit page.
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Math Marks (0-100)</label>
+                        <input type="number" step="any" min="0" max="100" name="math_marks" class="form-control" value="0">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Science Marks (0-100)</label>
+                        <input type="number" step="any" min="0" max="100" name="science_marks" class="form-control" value="0">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">English Marks (0-100)</label>
+                        <input type="number" step="any" min="0" max="100" name="english_marks" class="form-control" value="0">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Attendance (%)</label>
+                        <input type="number" step="any" min="0" max="100" name="attendance" class="form-control" value="0">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Hours Studied/day</label>
+                        <input type="number" step="any" min="0" max="24" name="hours_studied" class="form-control" value="0">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Assignments (%)</label>
+                        <input type="number" step="any" min="0" max="100" name="assignments" class="form-control" value="0">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Previous GPA (0-4.0)</label>
+                        <input type="number" step="any" min="0" max="4" name="prev_gpa" class="form-control" value="0">
+                    </div>
+                </div>
+                
+                <hr>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="create_login" value="yes" id="createLogin">
+                    <label class="form-check-label" for="createLogin">
+                        <strong>Create login account for this student</strong>
+                    </label>
+                </div>
+                
+                <div id="loginFields" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Username <span class="text-muted">(Optional - auto-generated if empty)</span></label>
+                            <input type="text" name="username" class="form-control" placeholder="Leave empty for auto-generate">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Password <span class="text-muted">(Optional - default: student123)</span></label>
+                            <input type="text" name="password" class="form-control" placeholder="Default: student123">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label>Email <span class="text-muted">(Optional - auto-generated if empty)</span></label>
+                            <input type="email" name="email" class="form-control" placeholder="Leave empty for auto-generate">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{{ url_for('admin_students_list') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadSections() {
+        const classId = document.getElementById('classSelect').value;
+        const sectionSelect = document.getElementById('sectionSelect');
+        
+        if (!classId) {
+            sectionSelect.innerHTML = '<option value="">-- Select Section --</option>';
+            return;
+        }
+        
+        fetch(`/api/classes/${classId}/sections`)
+            .then(response => response.json())
+            .then(data => {
+                sectionSelect.innerHTML = '<option value="">-- Select Section --</option>';
+                if (Array.isArray(data)) {
+                    data.forEach(section => {
+                        sectionSelect.innerHTML += `<option value="${section.id}">Section ${section.name}</option>`;
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error loading sections:', error);
+            });
+    }
+    
+    document.getElementById('createLogin').addEventListener('change', function() {
+        document.getElementById('loginFields').style.display = this.checked ? 'block' : 'none';
+    });
+</script>
+{% endblock %}

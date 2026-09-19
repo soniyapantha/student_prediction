@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<!-- Add this button in the admin dashboard header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>👑 Admin Dashboard</h2>
+    <div>
+        <a href="{{ url_for('admin_students_list') }}" class="btn btn-success">📚 Manage Students</a>
+        <a href="{{ url_for('admin_users') }}" class="btn btn-outline-secondary">👥 Manage Users</a>
+        <a href="{{ url_for('admin_training_history') }}" class="btn btn-outline-info">📊 Training History</a>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total Students</h5>
+                <h2>{{ total_students }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Total Users</h5>
+                <h2>{{ total_users }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Remarks Sent</h5>
+                <h2>{{ total_remarks }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">Unread Remarks</h5>
+                <h2>{{ unread_remarks }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ML Models Status -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">🧠 ML Models Status</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for name, data in models_data.items() %}
+                        {% if name != 'best_model_selected' %}
+                        <div class="col-md-4">
+                            <div class="card mb-2">
+                                <div class="card-body">
+                                    <h6>{{ name }}</h6>
+                                    <small>Accuracy: {{ data.accuracy }}%</small><br>
+                                    <small>CV Score: {{ data.cv_mean }}% ± {{ data.cv_std }}%</small><br>
+                                    <small>F1 Score: {{ data.f1_score }}%</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <form method="POST" action="{{ url_for('admin_retrain') }}" class="mt-3">
+                    <button type="submit" class="btn btn-warning" onclick="return confirm('Retrain all models? This may take 30-60 seconds.')">
+                        🔄 Retrain All Models
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Predictions -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">📋 Recent Student Predictions</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Avg Marks</th>
+                                <th>RF</th>
+                                <th>GB</th>
+                                <th>SVM</th>
+                                <th>Best Model</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in recent_predictions %}
+                            <tr>
+                                <td>{{ s.id }}</td>
+                                <td>{{ s.name }}</td>
+                                <td>{{ s.avg_marks }}</td>
+                                <td class="{% if s.prediction_rf == 'Pass' %}text-success{% else %}text-danger{% endif %}">{{ s.prediction_rf }}</td>
+                                <td class="{% if s.prediction_gb == 'Pass' %}text-success{% else %}text-danger{% endif %}">{{ s.prediction_gb }}</td>
+                                <td class="{% if s.prediction_svm == 'Pass' %}text-success{% else %}text-danger{% endif %}">{{ s.prediction_svm }}</td>
+                                <td>{{ s.best_model.split()[0] if s.best_model else '-' }}</td>
+                                <td>{{ s.created_at.strftime('%Y-%m-%d') if s.created_at else '-' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

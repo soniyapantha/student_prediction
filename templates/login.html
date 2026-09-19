@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Student Performance System{% endblock %}
+
+{% block content %}
+<!-- Added extra top padding and centering -->
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <!-- Added mt-5 mb-5 for vertical spacing and margin-top to push down from header -->
+            <div class="card shadow border-0 rounded-4 mt-5 mb-5">
+                <div class="card-header bg-primary text-white text-center border-0" 
+                     style="background: linear-gradient(135deg, #1e3c72 0%, #2b4c7c 100%); border-radius: 1rem 1rem 0 0 !important;">
+                    <div class="py-3">
+                        <h4 class="mb-1 fw-bold">🔐 Student Performance Prediction System</h4>
+                        <p class="mb-0 small opacity-75">BCA 8th Semester Project</p>
+                        <div class="mt-2 d-flex justify-content-center gap-2 flex-wrap">
+                            <span class="badge bg-light text-dark">Random Forest</span>
+                            <span class="badge bg-light text-dark">Gradient Boosting</span>
+                            <span class="badge bg-light text-dark">SVM</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Added pt-4 (padding-top) to create space between header and form -->
+                <div class="card-body p-4 p-lg-5 pt-4">
+                    <form method="POST">
+                        <div class="mb-4">
+                            <label for="username" class="form-label fw-semibold">
+                                Username
+                            </label>
+                            <input type="text" class="form-control form-control-lg" 
+                                   id="username" name="username" 
+                                   placeholder="Enter username" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="password" class="form-label fw-semibold">
+                                Password
+                            </label>
+                            <input type="password" class="form-control form-control-lg" 
+                                   id="password" name="password" 
+                                   placeholder="Enter password" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold">
+                            Login
+                        </button>
+                    </form>
+                    
+                  
+                    
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Additional styling to ensure proper spacing */
+    .card {
+        transition: transform 0.2s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    
+    /* Make sure form inputs are well spaced */
+    .form-control {
+        border-radius: 10px;
+        padding: 12px 15px;
+        margin-bottom: 5px;
+    }
+    
+    .form-control:focus {
+        border-color: #2b4c7c;
+        box-shadow: 0 0 0 0.2rem rgba(43, 76, 124, 0.25);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #1e3c72 0%, #2b4c7c 100%);
+        border: none;
+        padding: 12px;
+        border-radius: 10px;
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #163158 0%, #1f3d63 100%);
+        transform: translateY(-2px);
+    }
+    
+    /* Responsive spacing */
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1.5rem !important;
+        }
+        .mt-5 {
+            margin-top: 2rem !important;
+        }
+        .mb-5 {
+            margin-bottom: 2rem !important;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,11 @@
+# requirements.txt
+# ─────────────────────────────────────────────────────────────────────────────
+# Like .csproj <PackageReference> entries in .NET
+# Install all with: pip install -r requirements.txt
+# ─────────────────────────────────────────────────────────────────────────────
+
+flask==3.0.3               # Web framework  (= ASP.NET Core)
+sqlalchemy==2.0.30         # ORM            (= Entity Framework Core)
+pandas==2.2.2              # Data handling  (= DataTable / List<T> + LINQ)
+scikit-learn==1.4.2        # ML algorithms  (= ML.NET)
+numpy==1.26.4              # Math arrays    (= System.Numerics)

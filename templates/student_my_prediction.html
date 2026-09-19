@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}My Prediction Details{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📊 My Performance Prediction Details</h2>
+    <a href="{{ url_for('dashboard_student') }}" class="btn btn-secondary">← Back to Dashboard</a>
+</div>
+
+{% if student %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">🎯 Prediction Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert {% if student.prediction_rf == 'Pass' %}alert-success{% else %}alert-danger{% endif %} text-center">
+                    <h2>You are predicted to <strong>{{ student.prediction_rf }}</strong></h2>
+                    <p>Recommended model: {{ student.best_model }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">🤖 Model-wise Predictions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <div class="border rounded p-3">
+                            <h6>Random Forest</h6>
+                            <h3 class="{% if student.prediction_rf == 'Pass' %}text-success{% else %}text-danger{% endif %}">
+                                {{ student.prediction_rf }}
+                            </h3>
+                            <p>Confidence: {{ student.confidence_rf }}%</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="border rounded p-3">
+                            <h6>Gradient Boosting</h6>
+                            <h3 class="{% if student.prediction_gb == 'Pass' %}text-success{% else %}text-danger{% endif %}">
+                                {{ student.prediction_gb }}
+                            </h3>
+                            <p>Confidence: {{ student.confidence_gb }}%</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="border rounded p-3">
+                            <h6>SVM (RBF Kernel)</h6>
+                            <h3 class="{% if student.prediction_svm == 'Pass' %}text-success{% else %}text-danger{% endif %}">
+                                {{ student.prediction_svm }}
+                            </h3>
+                            <p>Confidence: {{ student.confidence_svm }}%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">📈 Improvement Suggestions</h5>
+            </div>
+            <div class="card-body">
+                {% if student.prediction_rf == 'Fail' %}
+                <ul>
+                    {% if student.attendance < 60 %}
+                    <li>⚠️ Your attendance is below 60%. Try to attend more classes regularly.</li>
+                    {% endif %}
+                    {% set avg_marks = (student.math_marks + student.science_marks + student.english_marks) / 3 %}
+                    {% if avg_marks < 45 %}
+                    <li>📚 Your average marks are below 45%. Focus on core subjects.</li>
+                    {% endif %}
+                    {% if student.math_marks < 35 %}
+                    <li>🧮 Your Math marks need improvement. Practice more problems daily.</li>
+                    {% endif %}
+                    {% if student.hours_studied < 1.5 %}
+                    <li>⏰ You need to study at least 1.5 hours per day consistently.</li>
+                    {% endif %}
+                    {% if student.assignments < 40 %}
+                    <li>📝 Complete more assignments to improve your understanding.</li>
+                    {% endif %}
+                    {% if student.prev_gpa < 1.8 %}
+                    <li>🎯 Work on improving your overall GPA from previous semester.</li>
+                    {% endif %}
+                </ul>
+                {% else %}
+                <div class="alert alert-success">
+                    <p>🎉 Great work! You are on track to pass. Keep maintaining:</p>
+                    <ul>
+                        <li>Continue regular attendance ({{ student.attendance }}%)</li>
+                        <li>Maintain consistent study hours ({{ student.hours_studied }} hrs/day)</li>
+                        <li>Keep up the good work in assignments ({{ student.assignments }}%)</li>
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-warning">
+    <h5>No student record found</h5>
+    <p>Your account is not linked to any student record. Please contact your teacher or administrator.</p>
+</div>
+{% endif %}
+{% endblock %}

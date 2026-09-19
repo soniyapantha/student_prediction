@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Student Details - {{ student.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📘 {{ student.name }} - Student Details</h2>
+    <div>
+        <a href="{{ url_for('edit_student', student_id=student.id) }}" class="btn btn-warning">✏️ Edit</a>
+        <a href="{{ url_for('teacher_send_remark', student_record_id=student.id) }}" class="btn btn-success">💬 Send Remark</a>
+        <a href="{{ url_for('dashboard_teacher') }}" class="btn btn-secondary">← Back</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">🎯 Prediction Results</h5>
+            </div>
+            <div class="card-body text-center">
+                <h1 class="display-4 {% if student.prediction_rf == 'Pass' %}text-success{% else %}text-danger{% endif %}">
+                    {{ student.prediction_rf }}
+                </h1>
+                <p>Recommended Model: <strong>{{ student.best_model }}</strong></p>
+                <hr>
+                <div class="row">
+                    <div class="col-4">
+                        <div class="border rounded p-2">
+                            <small>Random Forest</small>
+                            <h6>{{ student.prediction_rf }}</h6>
+                            <small>{{ student.confidence_rf }}% confidence</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="border rounded p-2">
+                            <small>Gradient Boost</small>
+                            <h6>{{ student.prediction_gb }}</h6>
+                            <small>{{ student.confidence_gb }}% confidence</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="border rounded p-2">
+                            <small>SVM</small>
+                            <h6>{{ student.prediction_svm }}</h6>
+                            <small>{{ student.confidence_svm }}% confidence</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">📊 Academic Details</h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr><th>Attendance</th><td>{{ student.attendance }}%</td></tr>
+                    <tr><th>Math Marks</th><td>{{ student.math_marks }} / 100</td></tr>
+                    <tr><th>Science Marks</th><td>{{ student.science_marks }} / 100</td></tr>
+                    <tr><th>English Marks</th><td>{{ student.english_marks }} / 100</td></tr>
+                    <tr><th>Average Marks</th><td>{{ student.avg_marks }} / 100</td></tr>
+                    <tr><th>Hours Studied</th><td>{{ student.hours_studied }} hrs/day</td></tr>
+                    <tr><th>Assignments</th><td>{{ student.assignments }}%</td></tr>
+                    <tr><th>Previous GPA</th><td>{{ student.prev_gpa }} / 4.0</td></tr>
+                    <tr><th>Overall Score</th><td>{{ student.overall_score }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Remarks History -->
+<div class="card">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0">📝 Remarks History</h5>
+    </div>
+    <div class="card-body">
+        {% if remarks %}
+            {% for remark in remarks %}
+            <div class="alert {% if remark.remark_type == 'appreciation' %}alert-success{% elif remark.remark_type == 'warning' %}alert-warning{% elif remark.remark_type == 'improvement' %}alert-info{% else %}alert-secondary{% endif %}">
+                <div class="d-flex justify-content-between">
+                    <strong>{{ remark.sender }}</strong>
+                    <small>{{ remark.created_at.strftime('%Y-%m-%d %H:%M') if remark.created_at else 'Unknown' }}</small>
+                </div>
+                <p class="mb-1 mt-2">{{ remark.message }}</p>
+                <small class="text-muted">Type: {{ remark.remark_type }}</small>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted text-center">No remarks sent yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
